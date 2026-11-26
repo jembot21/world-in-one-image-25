@@ -16,36 +16,28 @@ from functools import lru_cache
 
 
 ROOT = Path(__file__).resolve().parent
-OUTPUT = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")).resolve()
+OUTPUT = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", os.getcwd())).resolve()
+sys.dont_write_bytecode = True  # Never leave import caches beside the output.
 SIZE = 1024
 SCALE = 3  # Supersample type and silhouettes, then reduce once for clean edges.
 MARGIN = 28
-PAPER = "#f6f1e7"
-INK = "#201f1b"
-RED = "#aa2924"
-WATER = "#c3ced0"  # Muted blue-grey water, subordinate to the single red accent.
-GREY = "#858680"
+PAPER = "#ffffff"
+INK = "#101010"
+RED = INK  # The existing illustration accents now print in black ink.
+WATER = "#eeeeee"
+GREY = "#737373"
 SCENE_WIDTH = 120
 SCENE_HEIGHT = 50
 SCENE_GAP = 9
 
 
 def load_pillow():
-    """Prefer installed Pillow; unpack the matching wheel outside the project."""
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-        return Image, ImageDraw, ImageFont
-    except ImportError:
-        # A failed native-extension import can leave a partial PIL in sys.modules.
-        for name in list(sys.modules):
-            if name == "PIL" or name.startswith("PIL."):
-                del sys.modules[name]
-
+    """Use the bundled Pillow wheel, cached outside the project and output."""
     tag = f"cp{sys.version_info.major}{sys.version_info.minor}"
     wheels = sorted((ROOT / "vendor").glob(f"*-{tag}-{tag}-*manylinux*x86_64.whl"))
     if (sys.implementation.name != "cpython" or sys.platform != "linux"
             or platform.machine().lower() not in ("x86_64", "amd64") or not wheels):
-        raise RuntimeError("Install Pillow, or use CPython 3.12/3.13 on Linux x86_64.")
+        raise RuntimeError("Use CPython 3.12/3.13 on Linux x86_64 for bundled Pillow.")
     wheel = wheels[0]
     digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
     # TMPDIR can be overridden: explicitly reject a cache in either forbidden tree.
@@ -74,6 +66,9 @@ def load_pillow():
                     raise
     sys.path.insert(0, str(cache))
     importlib.invalidate_caches()
+    for name in list(sys.modules):
+        if name == "PIL" or name.startswith("PIL."):
+            del sys.modules[name]
     from PIL import Image, ImageDraw, ImageFont
     return Image, ImageDraw, ImageFont
 
@@ -113,9 +108,13 @@ def wrap(text, face, available):
 
 
 def block_height(lines, face, leading):
-    return ((len(lines) - 1) * leading
-            + max((face.getbbox(line, anchor="lt")[3] / SCALE for line in lines),
-                  default=0)) if lines else 0
+    if not lines:
+        return 0
+    # Share baselines even when lines start with different-height glyphs.
+    bounds = [face.getbbox(line, anchor="ls") for line in lines]
+    baseline = max(-box[1] / SCALE for box in bounds)
+    return baseline + max(index * leading + box[3] / SCALE
+                          for index, box in enumerate(bounds))
 
 
 class Page:
@@ -189,8 +188,11 @@ class Page:
         raise ValueError(f"Cannot fit text: {text!r}")
 
     def lines(self, lines, x, y, face, leading, box):
+        baseline = max((-face.getbbox(line, anchor="ls")[1] / SCALE
+                        for line in lines), default=0)
         for index, line in enumerate(lines):
-            self.text(line, x, y + index * leading, face, box=box)
+            self.text(line, x, y + baseline + index * leading, face,
+                      box=box, anchor="ls")
 
     def scene(self, kind, box):
         """Paste a whole drawing into its reserved panel, away from all text."""
@@ -431,44 +433,44 @@ class Scene(Page):
 
 
 def layout_lead(story, available):
-    """Keep the headline wide; reserve a separate scene beside the entire body."""
-    head_size, body_size = 18.3, 11.8
+    """Share the headline area with the scene; give the prose a full column."""
+    head_size, body_size = 21, 14
     head, body = font(head_size, "Bold"), font(body_size)
-    head_lines = wrap(story["headline"], head, available - 0.5)
     text_width = available - SCENE_WIDTH - SCENE_GAP
-    body_lines = wrap(story["body"], body, text_width - 0.5)
-    head_leading, body_leading = head_size + 0.8, body_size + 1.0
-    body_y = 12 + block_height(head_lines, head, head_leading) + 3.5
+    head_lines = wrap(story["headline"], head, text_width - 0.5)
+    body_lines = wrap(story["body"], body, available - 0.5)
+    head_leading, body_leading = 20, 17
+    body_y = max(12 + block_height(head_lines, head, head_leading),
+                 SCENE_HEIGHT) + 2
     body_height = block_height(body_lines, body, body_leading)
     return {"head": head, "body": body,
             "head_lines": head_lines, "body_lines": body_lines,
             "head_leading": head_leading, "body_leading": body_leading,
             "body_y": body_y, "text_width": text_width,
-            "height": body_y + max(body_height, SCENE_HEIGHT) + 2}
+            "height": body_y + body_height + 1}
 
 
 def draw_lead(page, story, box, scene, layout):
     x, y, right, bottom = box
-    # Share the existing metadata row; retain both labels at their original size.
+    # Keep both metadata labels above the headline, clear of the illustration.
+    head_right = x + layout["text_width"]
     stat_width = width(story["stat"], font(11.3, "Bold")) + 0.5
-    stat_left = right - stat_width
-    page.line(story["kicker"], (x, y, stat_left - 12, y + 10), 9.4, minimum=9.4,
-              style="Bold", color=RED)
-    page.line(story["stat"], (stat_left, y, right, y + 11),
-              11.3, minimum=11.3, style="Bold", color=RED, align="right")
+    stat_left = head_right - stat_width
+    page.line(story["kicker"], (x, y, stat_left - 8, y + 10), 9.4, minimum=9.4,
+              style="Bold")
+    page.line(story["stat"], (stat_left, y, head_right, y + 11),
+              11.3, minimum=11.3, style="Bold", align="right")
     head_y, body_y = y + 12, y + layout["body_y"]
     page.lines(layout["head_lines"], x, head_y, layout["head"],
-               layout["head_leading"], (x, head_y, right, body_y - 3))
+               layout["head_leading"], (x, head_y, head_right, body_y - 2))
     page.lines(layout["body_lines"], x, body_y, layout["body"],
-               layout["body_leading"], (x, body_y, x + layout["text_width"], bottom - 2))
+               layout["body_leading"], (x, body_y, right, bottom - 1))
     scene_left = right - SCENE_WIDTH
-    page.rule(scene_left - SCENE_GAP / 2, body_y,
-              scene_left - SCENE_GAP / 2, body_y + SCENE_HEIGHT, GREY, 0.4)
-    page.scene(scene, (scene_left, body_y, right, body_y + SCENE_HEIGHT))
+    page.scene(scene, (scene_left, y, right, y + SCENE_HEIGHT))
 
 
 def draw_leads(page, stories, top):
-    gutter, minimum_gap = 24, 7
+    gutter, minimum_gap = 24, 4
     column_width = (SIZE - 2 * MARGIN - gutter) / 2
     scenes = ("hormuz", "warship", "aid", "space", "pacific",
               "court", "slide", "shop", "trophy", "energy")
@@ -519,28 +521,21 @@ def rich_lines(story, size, available):
 def draw_briefs(page, stories, top, bottom):
     gutter = 22
     column_width = (SIZE - 2 * MARGIN - 2 * gutter) / 3
-    # Choose one readable type size and balanced contiguous column breaks.
-    # Session 2 uses 11px briefs: never trade their readability for illustration.
-    for size_step in range(34, 32, -1):
-        size = size_step / SCALE
-        ascent = max(font(size, style).getmetrics()[0]
-                     for style in ("Regular", "Bold")) / SCALE
-        descent = max(font(size, style).getmetrics()[1]
-                      for style in ("Regular", "Bold")) / SCALE
-        leading = max(size + 1, ascent + descent)
-        wrapped = [rich_lines(story, size, column_width - 0.5) for story in stories]
-        heights = [len(lines) * leading for lines in wrapped]
-        choices = []
-        for first in range(1, len(stories) - 1):
-            for second in range(first + 1, len(stories)):
-                breaks = (0, first, second, len(stories))
-                totals = [sum(heights[a:b]) + (b - a - 1) * 4
-                          for a, b in zip(breaks, breaks[1:])]
-                choices.append((max(totals), sum(t * t for t in totals), breaks))
-        required, _, breaks = min(choices)
-        if required <= bottom - top:
-            break
-    else:
+    # Fixed type and leading: edits must fit the page without shrinking copy.
+    size, leading, minimum_gap = 12.5, 15.5, 6
+    ascent = max(font(size, style).getmetrics()[0]
+                 for style in ("Regular", "Bold")) / SCALE
+    wrapped = [rich_lines(story, size, column_width - 0.5) for story in stories]
+    heights = [len(lines) * leading for lines in wrapped]
+    choices = []
+    for first in range(1, len(stories) - 1):
+        for second in range(first + 1, len(stories)):
+            breaks = (0, first, second, len(stories))
+            totals = [sum(heights[a:b]) + (b - a - 1) * minimum_gap
+                      for a, b in zip(breaks, breaks[1:])]
+            choices.append((max(totals), sum(t * t for t in totals), breaks))
+    required, _, breaks = min(choices)
+    if required > bottom - top:
         raise ValueError("Briefs cannot fit without losing content.")
     for column, (start, end) in enumerate(zip(breaks, breaks[1:])):
         x = MARGIN + column * (column_width + gutter)
@@ -561,6 +556,10 @@ def draw_briefs(page, stories, top, bottom):
                               box=(x, top, x + column_width, bottom), anchor="ls")
                     cursor += width(word, face)
                 y += leading
+            if index < end - 1:
+                page.rule(x, y + gap / 2 - 1,
+                          x + column_width, y + gap / 2 - 1,
+                          thickness=0.35)
             y += gap
 
 
@@ -568,53 +567,54 @@ def render(data):
     if (len(data["leads"]), len(data["numbers"]), len(data["briefs"])) != (10, 8, 18):
         raise ValueError("Expected exactly 10 leads, 8 numbers and 18 briefs.")
     page = Page()
-    page.line("THE WORLD IN ONE IMAGE", (28, 20, 996, 74), 72,
-              style="Bold", align="center")
-    page.rule(28, 79, 996, 79, RED, 3)
-    page.line(data["date"] + " · The whole day, on one page",
-              (28, 88, 615, 101), 12)
+    # A compact nameplate and ruled dateline leave the page to the reporting.
+    page.rule(MARGIN, 8, SIZE - MARGIN, 8, thickness=1.5)
+    page.rule(MARGIN, 11, SIZE - MARGIN, 11)
+    page.line("THE WORLD IN ONE IMAGE", (MARGIN, 17, SIZE - MARGIN, 57),
+              56, minimum=56, style="Bold", align="center")
+    page.rule(MARGIN, 62, SIZE - MARGIN, 62, thickness=1.2)
+    page.line(data["date"], (MARGIN, 69, 520, 80), 11.5, minimum=11.5,
+              style="Bold")
     page.line("All the world news that fits in one image",
-              (638, 89, 996, 101), 11.5, style="Italic", align="right")
-    page.region_dots(105)
-    page.rule(28, 116, 996, 116)
+              (550, 69, SIZE - MARGIN, 80), 11.5, minimum=11.5,
+              style="Italic", align="right")
+    page.rule(MARGIN, 82, SIZE - MARGIN, 82)
 
-    section_gap = 10
-    lead_bottom = draw_leads(page, data["leads"], 116 + section_gap)
-    numbers_top = lead_bottom + section_gap
-    numbers_bottom = numbers_top + 97
+    lead_bottom = draw_leads(page, data["leads"], 89)
+    numbers_top = lead_bottom + 7
+    numbers_bottom = numbers_top + 87
 
-    page.line("THE DAY IN NUMBERS", (28, numbers_top, 400, numbers_top + 12), 10,
-              style="Bold", color=RED)
-    page.rule(28, numbers_top + 16, 996, numbers_top + 16, thickness=0.8)
-    page.rule(28, numbers_bottom, 996, numbers_bottom, thickness=0.8)
-    number_width = (SIZE - 2 * MARGIN) / 4
-    motifs = ("bars", "up", "up", "coin", "controller", "down", "up", "bolt")
+    page.rule(MARGIN, numbers_top, SIZE - MARGIN, numbers_top, thickness=1)
+    page.line("THE DAY IN NUMBERS",
+              (MARGIN, numbers_top + 5, 400, numbers_top + 14),
+              11, minimum=11, style="Bold")
+    page.rule(MARGIN, numbers_top + 18, SIZE - MARGIN, numbers_top + 18)
+    page.rule(MARGIN, numbers_bottom, SIZE - MARGIN, numbers_bottom, thickness=1)
+    number_width = (SIZE - 2 * MARGIN) / 8
     for index, number in enumerate(data["numbers"]):
-        row, column = divmod(index, 4)
-        x = MARGIN + column * number_width
-        y = numbers_top + 21 + row * 38
+        x = MARGIN + index * number_width
+        y = numbers_top + 23
         page.line(number["figure"], (x + 6, y, x + number_width - 6, y + 23),
-                  23, minimum=23, style="Bold", color=RED, align="center")
-        figure_right = x + number_width / 2 + width(number["figure"], font(23, "Bold")) / 2
-        page.number_motif(motifs[index], figure_right + 7, y + 4)
-        page.line(number["caption"],
-                  (x + 6, y + 24, x + number_width - 6, y + 35),
-                  9.7, minimum=9.7, align="center")
-        if column:
-            page.rule(x, y, x, y + 33)
+                  24, minimum=24, style="Bold", align="center")
+        caption_face = font(11.5)
+        caption_lines = wrap(number["caption"], caption_face, number_width - 12.5)
+        baseline = max(-caption_face.getbbox(line, anchor="ls")[1] / SCALE
+                       for line in caption_lines)
+        for row, line in enumerate(caption_lines):
+            page.text(line, x + (number_width - width(line, caption_face)) / 2,
+                      y + 23 + baseline + row * 12.5, caption_face,
+                      box=(x + 6, y + 23, x + number_width - 6, numbers_bottom - 3),
+                      anchor="ls")
+        if index:
+            page.rule(x, numbers_top + 18, x, numbers_bottom)
 
-    briefs_heading = numbers_bottom + section_gap
-    footer_top = 961
-    page.line("AROUND THE WORLD · 18 BRIEFS",
-              (28, briefs_heading, 650, briefs_heading + 12), 10.5,
-              style="Bold", color=RED)
-    draw_briefs(page, data["briefs"], briefs_heading + 16, footer_top - section_gap)
-
-    page.rectangle((28, footer_top, 996, 996), outline=INK, thickness=0.8)
-    page.line("Every story above was reported on " + data["date"],
-              (36, 967, 988, 980), 12, style="Bold", align="center")
-    page.line("Drawn by a program · No photographs · One page, one day",
-              (36, 984, 988, 995), 10, align="center")
+    briefs_heading = numbers_bottom + 7
+    page.line("AROUND THE WORLD — 18 BRIEFS",
+              (MARGIN, briefs_heading, 650, briefs_heading + 12),
+              12.5, minimum=12.5, style="Bold")
+    page.rule(MARGIN, briefs_heading + 15, SIZE - MARGIN, briefs_heading + 15)
+    draw_briefs(page, data["briefs"], briefs_heading + 21, 1005)
+    page.rule(MARGIN, 1009, SIZE - MARGIN, 1009)
     return page.image.resize((SIZE, SIZE), Image.Resampling.LANCZOS)
 
 

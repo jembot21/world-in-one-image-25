@@ -4,61 +4,61 @@
     {
       "kicker": "MIDDLE EAST · ENERGY",
       "headline": "Attacks on Shipping in the Strait of Hormuz",
-      "body": "Fresh attacks on commercial vessels in the Strait of Hormuz raised fears for global energy supplies, as Iran vowed to use all available means against a US blockade. A Houthi strike on Riyadh and interceptions over Saudi Arabia put a second sea lane, the Red Sea, under threat as well.",
+      "body": "Fresh attacks on commercial ships raised global energy supply fears. Iran vowed to use all available means against a US blockade; a Houthi strike on Riyadh and interceptions over Saudi Arabia also threatened the Red Sea.",
       "stat": "2 sea lanes under threat"
     },
     {
       "kicker": "UKRAINE WAR",
       "headline": "Ukraine Sinks Russian Warship in a Libyan Port",
-      "body": "Ukrainian drones sank a Russian warship in Benghazi and hit cargo ships from the Mediterranean to the Baltic, in Kyiv's longest-range campaign of the war. Two Libyan naval officers were killed, raising fears of a wider Mediterranean escalation.",
+      "body": "Ukrainian drones sank the warship in Benghazi and hit cargo ships from the Mediterranean to the Baltic: Kyiv's longest-range war campaign. Two Libyan naval officers were killed, raising fears of wider Mediterranean escalation.",
       "stat": "1 warship sunk"
     },
     {
       "kicker": "EUROPE",
       "headline": "Zelensky: Ukraine Needs €115 Billion for 2027",
-      "body": "Kyiv says it needs €115 billion in foreign aid to fund the state and the war through 2027. The appeal landed as the US defence secretary paused Patriot missile supplies and Washington shelved proposals to end the war through business deals with Russia.",
+      "body": "Kyiv seeks €115 billion in foreign aid for the state and war through 2027. The US defence secretary paused Patriot missile supplies; Washington shelved business-deal plans with Russia to end the war.",
       "stat": "€115bn aid needed"
     },
     {
       "kicker": "SPACE",
       "headline": "Pakistan's First Astronaut Reaches China's Space Station",
-      "body": "China launched a crewed spaceship carrying Pakistan's first astronaut to its orbiting space station, a milestone watched live across Pakistan. The flight deepens the two countries' space partnership and gives Islamabad its first human presence in orbit.",
+      "body": "China's crewed launch took Pakistan's first astronaut to its orbiting space station, a milestone watched live across Pakistan. The flight deepens their space partnership and marks Islamabad's first human presence in orbit.",
       "stat": "1st Pakistani in orbit"
     },
     {
       "kicker": "PACIFIC",
       "headline": "Australia Signs Landmark Treaty with Solomon Islands",
-      "body": "Australia and Solomon Islands signed a major treaty that strengthens Canberra's security position in the Pacific. The pact reshapes regional alignments as Pacific capitals weigh competing partnerships and promises.",
+      "body": "Australia and Solomon Islands signed a major treaty strengthening Canberra's Pacific security position and reshaping regional alignments, as Pacific capitals weigh competing partnerships and promises.",
       "stat": "A Pacific pact signed"
     },
     {
       "kicker": "TECH · TRADE WAR",
       "headline": "US Jury Convicts Huawei of Stealing Trade Secrets",
-      "body": "A New York jury found Huawei guilty of conspiring to steal trade secrets, though it acquitted the Chinese firm of racketeering. Beijing accused Washington of obstructing Chinese companies, in the latest legal clash of the tech cold war.",
+      "body": "A New York jury convicted Chinese firm Huawei of conspiring to steal trade secrets but acquitted it of racketeering. Beijing accused Washington of obstructing Chinese firms in the tech cold war's latest legal clash.",
       "stat": "Guilty: trade secrets"
     },
     {
       "kicker": "MARKETS · AI",
       "headline": "Anthropic Shares Fall Below Their IPO Price",
-      "body": "Anthropic's stock dropped below its market launch price for the first time, wiping out its $1 trillion valuation as AI fears returned to Wall Street. Asian markets fell first, and US futures followed them lower.",
+      "body": "Anthropic shares fell below their IPO price for the first time, wiping out its $1 trillion valuation as AI fears returned to Wall Street. Asian markets fell first; US futures followed lower.",
       "stat": "$1tn valuation wiped"
     },
     {
       "kicker": "LATIN AMERICA",
       "headline": "Colombia Frees All Hostages in Supermarket Siege",
-      "body": "Colombian security forces stormed a Cartagena supermarket and freed every hostage, ending a siege that had gripped the country. President Petro said one assailant was killed and all the captives came out alive.",
+      "body": "Colombian security forces stormed a Cartagena supermarket, freeing every hostage and ending a siege that gripped the country. President Petro said one assailant was killed and all captives survived.",
       "stat": "All hostages freed"
     },
     {
       "kicker": "SPORT",
       "headline": "Court Gives Senegal Its Africa Cup Title Back",
-      "body": "Sport's highest court ruled for Senegal on appeal, restoring its 2025 Africa Cup of Nations title. Morocco, stripped of the crown by the ruling, vowed to challenge it.",
+      "body": "Sport's highest court restored Senegal's 2025 Africa Cup of Nations title on appeal. Morocco, stripped of the crown, vowed to challenge the ruling.",
       "stat": "2025 title restored"
     },
     {
       "kicker": "BRITAIN",
       "headline": "UK Energy Bills to Jump 26% in January",
-      "body": "Regulator Ofgem is raising the energy price cap as gas prices surge, lifting a typical annual bill from £1,723 to £2,166. The rise lands in January, the coldest and darkest month of the British winter.",
+      "body": "Regulator Ofgem's energy price cap rise, driven by surging gas prices, lifts a typical annual bill from £1,723 to £2,166 in January, Britain's coldest, darkest winter month.",
       "stat": "+26% from January"
     }
   ],
@@ -73,23 +73,23 @@
     {"figure": "£2,166", "caption": "new UK yearly energy cap, up from £1,723"}
   ],
   "briefs": [
-    {"headline": "EURO INFLATION", "body": "Inflation across the euro area rose to 4.0%, Eurostat reported, as growth, jobs and production data painted a mixed picture."},
-    {"headline": "AUSTRALIA PRICES", "body": "Australian inflation climbed to 4.9% on fuel costs, though the central bank is still expected to hold interest rates."},
-    {"headline": "EU TECH FUND", "body": "The European Union is planning a €50 billion technology fund designed to challenge the dominance of the US and China."},
-    {"headline": "GTA VI", "body": "GTA VI's $3.79 billion debut had Zuckerberg joking and Musk laughing, but Take-Two investors still want more."},
-    {"headline": "EASYJET", "body": "EasyJet's profit fell 89% after a £244 million fuel-cost hit; the airline is speeding up retirement of its oldest aircraft."},
-    {"headline": "AMAZON BUYS DECART", "body": "Amazon bought AI startup Decart, a bet that better software can help its own chips compete with Nvidia's."},
-    {"headline": "AI-AGENT HACK", "body": "Amazon says attackers used AI agents, with little human input, to break into a university server through a previously unknown flaw."},
+    {"headline": "EURO INFLATION", "body": "Eurostat: euro-area inflation rose to 4.0%; growth, jobs and output data were mixed."},
+    {"headline": "AUSTRALIA PRICES", "body": "Fuel costs lifted Australian inflation to 4.9%; the central bank is still expected to hold interest rates."},
+    {"headline": "EU TECH FUND", "body": "The EU plans a €50 billion tech fund to challenge US and Chinese dominance."},
+    {"headline": "GTA VI", "body": "GTA VI's $3.79 billion debut had Zuckerberg joking and Musk laughing; Take-Two investors still want more."},
+    {"headline": "EASYJET", "body": "EasyJet profit fell 89% after a £244 million fuel-cost hit; it is retiring its oldest aircraft faster."},
+    {"headline": "AMAZON BUYS DECART", "body": "Amazon bought AI startup Decart, betting better software can help its chips compete with Nvidia's."},
+    {"headline": "AI-AGENT HACK", "body": "Amazon says attackers used AI agents with little human input to breach a university server through a previously unknown flaw."},
     {"headline": "CIA BREACH", "body": "Hackers breached unclassified CIA and ODNI intelligence-analysis systems, the New York Times reported."},
     {"headline": "GAZA", "body": "Israeli strikes in Gaza killed seven people, including a senior security official."},
-    {"headline": "RIYADH", "body": "A Houthi attack injured 11 people in Riyadh, two of them Indian; the Saudi-led coalition intercepted further attacks after striking Hodeidah."},
+    {"headline": "RIYADH", "body": "A Houthi attack injured 11 in Riyadh, including two Indians. The Saudi-led coalition intercepted more attacks after striking Hodeidah."},
     {"headline": "KOREA", "body": "South Korea said Russian jets entered its air defence identification zone."},
-    {"headline": "NORTH KOREA", "body": "North Korea declared a Swiss diplomat persona non grata and ordered him to leave the country."},
-    {"headline": "XI PURGE", "body": "Xi Jinping's anti-corruption purge took down Chen Jining, Shanghai's party chief and a rising political star."},
+    {"headline": "NORTH KOREA", "body": "North Korea declared a Swiss diplomat persona non grata and ordered him out."},
+    {"headline": "XI PURGE", "body": "Xi Jinping's anti-corruption purge ousted Chen Jining, Shanghai's party chief and a rising political star."},
     {"headline": "BANGLADESH", "body": "Bangladesh garment workers won a 36% pay rise after weeks of protests."},
-    {"headline": "INDONESIA MINE", "body": "Rescuers searched for dozens of miners trapped in a flooded gold mine in Indonesia."},
-    {"headline": "HIV WARNING", "body": "The UN warned that funding cuts threaten decades of progress in the fight against HIV and AIDS."},
-    {"headline": "ÁBREGO GARCÍA", "body": "Kilmar Ábrego García left the US for Spain, ending a 20-month legal fight that made him a symbol of Trump-era deportations."},
-    {"headline": "GIVING", "body": "After $26 billion in gifts, MacKenzie Scott gave Atlanta students $8 million more — and is still worth $27 billion."}
+    {"headline": "INDONESIA MINE", "body": "Rescuers sought dozens of miners trapped in a flooded Indonesian gold mine."},
+    {"headline": "HIV WARNING", "body": "The UN warned funding cuts threaten decades of progress against HIV and AIDS."},
+    {"headline": "ÁBREGO GARCÍA", "body": "Kilmar Ábrego García left the US for Spain, ending a 20-month legal fight that made him a Trump-era deportation symbol."},
+    {"headline": "GIVING", "body": "After $26 billion in gifts, MacKenzie Scott gave Atlanta students another $8 million; she is still worth $27 billion."}
   ]
 }
